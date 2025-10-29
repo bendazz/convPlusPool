@@ -62,6 +62,24 @@
         </div>
       </div>
     </section>
+
+    <section class="practice" aria-label="practice">
+      <h2>Practice</h2>
+      <div class="qa-card">
+        <p class="prompt">
+          Given an input RGB image of size <strong><span id="qInputSize">8×8</span></strong> and <strong><span id="qKernelCount">3</span></strong> kernels,
+          what are the dimensions of the final stacked set of pooled maps after a 3×3 convolution and 2×2 max pooling?
+        </p>
+        <div class="actions">
+          <button id="btnReveal" type="button">Reveal answer</button>
+          <button id="btnNewQuestion" type="button" class="secondary">New question</button>
+        </div>
+        <div id="qAnswer" class="answer" hidden>
+          <span class="label">Answer:</span>
+          <span id="qAnswerText">3×3×3</span>
+        </div>
+      </div>
+    </section>
   </main>
 
   <footer>

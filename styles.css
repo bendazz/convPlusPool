@@ -53,3 +53,20 @@ footer { font-size: 12px; }
 .stage-col .label { font-size: 12px; color: #6b7280; margin-top: 2px; }
 
 @media (max-width: 1100px) { .layout { grid-template-columns: 1fr; } .viz { grid-template-columns: 1fr; } }
+
+/* Practice section */
+.practice { grid-column: 1 / -1; }
+.practice h2 { margin: 8px 0; font-size: 16px; }
+.qa-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 12px;
+}
+.qa-card .prompt { margin: 0 0 10px; font-size: 14px; color: #111827; }
+.qa-card .actions { display: flex; gap: 8px; margin-bottom: 8px; }
+.qa-card button { padding: 6px 10px; border-radius: 6px; border: 1px solid #94a3b8; background: #e2e8f0; cursor: pointer; font-size: 13px; }
+.qa-card button:hover { background: #cbd5e1; }
+.qa-card button.secondary { background: #f1f5f9; }
+.qa-card .answer { font-size: 14px; color: #111827; }
+.qa-card .answer .label { color: #6b7280; margin-right: 6px; }

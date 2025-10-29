@@ -13,6 +13,13 @@
   const colConvs = el('colConvs');
   const colPools = el('colPools');
   const colPooledStack = el('colPooledStack');
+  // Practice DOM
+  const qInputSize = el('qInputSize');
+  const qKernelCount = el('qKernelCount');
+  const qAnswer = el('qAnswer');
+  const qAnswerText = el('qAnswerText');
+  const btnReveal = el('btnReveal');
+  const btnNewQuestion = el('btnNewQuestion');
 
   // State (fixed architecture)
   const state = {
@@ -153,6 +160,53 @@
       sWrap.appendChild(sCanvas); sWrap.appendChild(sLbl);
       colPooledStack.appendChild(sWrap);
     }
+
+    // Update practice question if present and not yet initialized
+    if (qInputSize && qKernelCount && !practice.initialized) {
+      generatePracticeQuestion();
+    }
+  }
+
+  // Practice logic
+  const practice = { n: 8, k: 3, initialized: false, revealed: false };
+
+  function evenInRange(min, max) {
+    // ensure even; if min is odd, bump by 1
+    const start = (min % 2 === 0) ? min : min + 1;
+    const evens = [];
+    for (let v = start; v <= max; v += 2) evens.push(v);
+    return evens[Math.floor(Math.random() * evens.length)] || start;
+  }
+
+  function generatePracticeQuestion() {
+    // Use a range beyond the visualization's slider so students can't infer directly
+    const minN = 16; // ensure > 14 and even
+    const maxN = 64; // reasonable upper bound
+    const minK = parseInt(kernelCountEl?.min || '1', 10);
+    const maxK = parseInt(kernelCountEl?.max || '8', 10);
+
+    practice.n = evenInRange(minN, maxN);
+    practice.k = Math.floor(Math.random() * (maxK - minK + 1)) + minK;
+    practice.revealed = false;
+    practice.initialized = true;
+    updatePracticeUI();
+  }
+
+  function computeFinalDims(n, k) {
+    const [ch, cw] = computeConvOutputShape(n, n, state.kernelSize, state.convStride, state.convPadding);
+    const convH = Math.max(1, ch), convW = Math.max(1, cw);
+    const [ph0, pw0] = computePoolOutputShape(convH, convW, state.poolSize, state.poolStride);
+    const poolH = Math.max(1, ph0), poolW = Math.max(1, pw0);
+    return { h: poolH, w: poolW, c: k };
+  }
+
+  function updatePracticeUI() {
+    if (!qInputSize || !qKernelCount || !qAnswer || !qAnswerText) return;
+    qInputSize.textContent = `${practice.n}×${practice.n}`;
+    qKernelCount.textContent = `${practice.k}`;
+    const dims = computeFinalDims(practice.n, practice.k);
+    qAnswerText.textContent = `${dims.h}×${dims.w}×${dims.c}`;
+    qAnswer.hidden = !practice.revealed;
   }
 
   function wire() {
@@ -165,9 +219,26 @@
       recomputeAndRender();
     });
     window.addEventListener('resize', recomputeAndRender);
+
+    // Practice buttons
+    if (btnReveal) {
+      btnReveal.addEventListener('click', () => {
+        practice.revealed = true;
+        updatePracticeUI();
+      });
+    }
+    if (btnNewQuestion) {
+      btnNewQuestion.addEventListener('click', () => {
+        generatePracticeQuestion();
+      });
+    }
   }
 
   // Init
   wire();
   recomputeAndRender();
+  // Initialize practice if section exists
+  if (qInputSize && qKernelCount) {
+    generatePracticeQuestion();
+  }
 })();
