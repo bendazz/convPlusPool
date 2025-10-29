@@ -1,0 +1,56 @@
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  color: #1f2937;
+  background: #f8fafc;
+}
+header, footer { padding: 12px 16px; background: #0f172a; color: #e5e7eb; }
+header h1 { margin: 0 0 6px; font-size: 20px; }
+header p { margin: 0; opacity: 0.8; }
+footer { font-size: 12px; }
+
+.layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 16px;
+  padding: 16px;
+}
+
+.controls {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 12px;
+  position: sticky;
+  top: 12px;
+  height: fit-content;
+}
+.controls h2 { margin: 4px 0 8px; font-size: 16px; }
+.control { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 8px; margin: 10px 0; }
+.control.row { grid-template-columns: 1fr 1fr; }
+.control label { font-size: 14px; color: #111827; }
+.control input[type="range"] { grid-column: 1 / span 2; }
+.control .value { font-size: 12px; color: #4b5563; justify-self: end; }
+.controls button { padding: 6px 10px; border-radius: 6px; border: 1px solid #94a3b8; background: #e2e8f0; cursor: pointer; }
+.controls button:hover { background: #cbd5e1; }
+.controls .checkbox { display: flex; align-items: center; gap: 6px; font-size: 13px; }
+.help { margin-top: 8px; font-size: 13px; color: #374151; }
+
+.viz { display: grid; grid-template-columns: 340px 1fr; gap: 16px; }
+.panel { background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 8px; }
+.panel h3 { margin: 4px 0 8px; font-size: 14px; color: #111827; }
+
+#inputCanvas { width: 100%; height: auto; border: 1px solid #e5e7eb; border-radius: 4px; background: #fff; }
+
+.kernels { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px; }
+.kernel-card { background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 8px; }
+.kernel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+.kernel-header .tag { font-size: 12px; color: #4338ca; background: #eef2ff; border: 1px solid #c7d2fe; padding: 2px 6px; border-radius: 999px; }
+.kernel-grids { display: grid; grid-template-columns: 1fr; gap: 8px; }
+.kernel-grids .grid { display: flex; flex-direction: column; align-items: center; }
+.kernel-grids canvas { width: 100%; height: auto; border: 1px solid #e5e7eb; border-radius: 4px; background: #fff; }
+.kernel-grids .label { font-size: 12px; color: #6b7280; margin-top: 2px; }
+
+@media (max-width: 1100px) { .layout { grid-template-columns: 1fr; } .viz { grid-template-columns: 1fr; } }
