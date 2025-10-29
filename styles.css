@@ -44,7 +44,7 @@ footer { font-size: 12px; }
 
 #inputCanvas { width: auto; max-width: 100%; height: auto; border: 1px solid #e5e7eb; border-radius: 4px; background: #fff; display: block; margin: 0 auto; }
 
-.stages { display: grid; grid-template-columns: repeat(3, minmax(160px, 1fr)); gap: 10px; }
+.stages { display: grid; grid-template-columns: repeat(4, minmax(160px, 1fr)); gap: 10px; }
 .stage { background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 8px; }
 .stage h3 { margin: 4px 0 6px; font-size: 14px; color: #111827; text-align: center; }
 .stage-col { display: flex; flex-direction: column; gap: 8px; }
