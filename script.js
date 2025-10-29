@@ -10,7 +10,9 @@
   const kernelCountValue = el('kernelCountValue');
   // pool size fixed; no DOM inputs
   const inputCanvas = el('inputCanvas');
-  const kernelsContainer = el('kernelsContainer');
+  const colKernels = el('colKernels');
+  const colConvs = el('colConvs');
+  const colPools = el('colPools');
 
   // State
   let state = {
@@ -223,8 +225,10 @@
   function drawOutlineGrid(canvas, h, w, label) {
     const padding = 8;
     const ctx = canvas.getContext('2d');
-    const maxCell = 28;
-    const maxWidth = canvas.parentElement ? canvas.parentElement.clientWidth - 2 : 320;
+    const maxCell = 14; // larger cells
+    const parentWidth = canvas.parentElement ? canvas.parentElement.clientWidth - 2 : 320;
+    const desiredMax = (canvas === inputCanvas) ? 300 : 260; // larger caps
+    const maxWidth = Math.min(parentWidth, desiredMax);
     const cell = Math.min(maxCell, Math.floor((maxWidth - padding * 2) / w));
     const width = cell * w + padding * 2;
     const height = cell * h + padding * 2;
@@ -242,22 +246,18 @@
       }
     }
 
-    // Label in the corner
-    ctx.fillStyle = '#334155';
-    ctx.font = `${Math.max(10, Math.floor(cell * 0.38))}px ui-sans-serif, system-ui, -apple-system`;
-    const text = label || `${h}×${w}`;
-    ctx.textAlign = 'right';
-    ctx.textBaseline = 'bottom';
-    ctx.fillText(text, width - 6, height - 4);
+    // No in-canvas dimension labels (cleaner look)
   }
 
   // Stacked grids to represent channels depth (C)
   function drawStackedGrid(canvas, h, w, c, label) {
-    const padding = 12;
+    const padding = 8;
     const offset = 8; // per-layer offset (px)
     const ctx = canvas.getContext('2d');
-    const maxCell = 24;
-    const maxWidth = canvas.parentElement ? canvas.parentElement.clientWidth - 2 : 320;
+    const maxCell = 14; // larger cells
+    const parentWidth = canvas.parentElement ? canvas.parentElement.clientWidth - 2 : 320;
+    const desiredMax = (canvas === inputCanvas) ? 300 : 260; // larger caps
+    const maxWidth = Math.min(parentWidth, desiredMax);
     // Account for stack offset in width
     const cell = Math.min(maxCell, Math.floor((maxWidth - padding * 2 - (c - 1) * offset) / w));
     const width = cell * w + padding * 2 + (c - 1) * offset;
@@ -278,13 +278,7 @@
       ctx.strokeRect(ox + 0.5, oy + 0.5, cell * w - 1, cell * h - 1);
     }
 
-    // Label on the front-most layer
-    ctx.fillStyle = '#334155';
-    ctx.font = `${Math.max(10, Math.floor(cell * 0.38))}px ui-sans-serif, system-ui, -apple-system`;
-    const text = label || `${h}×${w}×${c}`;
-    ctx.textAlign = 'right';
-    ctx.textBaseline = 'bottom';
-    ctx.fillText(text, width - 6, height - 4);
+    // No in-canvas dimension labels (cleaner look)
   }
 
   function computeConvOutputShape(inH, inW, k, stride, padding) {
@@ -369,23 +363,40 @@
     syncLabels();
 
     // draw input (diagram only)
-    drawStackedGrid(inputCanvas, state.inputSize, state.inputSize, state.channels, `Input ${state.inputSize}×${state.inputSize}×${state.channels}`);
+  drawStackedGrid(inputCanvas, state.inputSize, state.inputSize, state.channels);
 
     // rebuild kernel cards
-    kernelsContainer.innerHTML = '';
+    if (colKernels) colKernels.innerHTML = '';
+    if (colConvs) colConvs.innerHTML = '';
+    if (colPools) colPools.innerHTML = '';
 
     for (let idx = 0; idx < state.kernelCount; idx++) {
-      const { card, kernelCanvas, convCanvas, poolCanvas } = makeKernelCard(idx);
-      kernelsContainer.appendChild(card);
+        // Create canvases per stage and append to columns
+    const kernelCanvas = document.createElement('canvas');
+    drawStackedGrid(kernelCanvas, state.kernelSize, state.kernelSize, state.channels);
+        const kernelWrap = document.createElement('div');
+        kernelWrap.className = 'grid';
+        const kernelLbl = document.createElement('div'); kernelLbl.className = 'label'; kernelLbl.textContent = 'Kernel weights (3D)';
+        kernelWrap.appendChild(kernelCanvas); kernelWrap.appendChild(kernelLbl);
+        colKernels.appendChild(kernelWrap);
 
-      // Diagram path: outline only with dimensions
-    drawStackedGrid(kernelCanvas, state.kernelSize, state.kernelSize, state.channels, `K ${state.kernelSize}×${state.kernelSize}×${state.channels}`);
-      const [oh, ow] = computeConvOutputShape(state.inputSize, state.inputSize, state.kernelSize, state.convStride, state.convPadding);
-      const convLabel = oh > 0 && ow > 0 ? `Conv ${oh}×${ow}` : 'Conv n/a';
-      drawOutlineGrid(convCanvas, Math.max(1, oh), Math.max(1, ow), convLabel);
-      const [ph, pw] = computePoolOutputShape(Math.max(1, oh), Math.max(1, ow), state.poolSize, state.poolStride);
-      const poolLabel = (oh >= state.poolSize && ow >= state.poolSize) && ph > 0 && pw > 0 ? `Pool ${ph}×${pw}` : 'Pool n/a';
-      drawOutlineGrid(poolCanvas, Math.max(1, ph), Math.max(1, pw), poolLabel);
+        const [oh, ow] = computeConvOutputShape(state.inputSize, state.inputSize, state.kernelSize, state.convStride, state.convPadding);
+        const convCanvas = document.createElement('canvas');
+    drawOutlineGrid(convCanvas, Math.max(1, oh), Math.max(1, ow));
+        const convWrap = document.createElement('div');
+        convWrap.className = 'grid';
+        const convLbl = document.createElement('div'); convLbl.className = 'label'; convLbl.textContent = 'Convolution output';
+        convWrap.appendChild(convCanvas); convWrap.appendChild(convLbl);
+        colConvs.appendChild(convWrap);
+
+        const [ph, pw] = computePoolOutputShape(Math.max(1, oh), Math.max(1, ow), state.poolSize, state.poolStride);
+        const poolCanvas = document.createElement('canvas');
+    drawOutlineGrid(poolCanvas, Math.max(1, ph), Math.max(1, pw));
+        const poolWrap = document.createElement('div');
+        poolWrap.className = 'grid';
+        const poolLbl = document.createElement('div'); poolLbl.className = 'label'; poolLbl.textContent = 'Pooled output';
+        poolWrap.appendChild(poolCanvas); poolWrap.appendChild(poolLbl);
+        colPools.appendChild(poolWrap);
     }
   }
 

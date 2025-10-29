@@ -18,9 +18,9 @@ Option B: use a simple static server (optional)
 
 ## What you’ll see
 
-- Diagram-only: outline grids with dimension labels, focusing on shape changes.
+- Diagram-only: outline grids focusing on shape changes (no in-canvas dimension labels).
 - Input: An RGB input (C=3) drawn as stacked grids (H×W×3).
-- Kernels: 3D kernels (3×3×3) drawn as stacked grids per kernel card.
+- Kernels: 3D kernels (3×3×3) drawn as stacked grids per kernel column.
 - Outputs: Convolution and pooled outputs are single 2D maps per kernel.
 
 ## Controls

@@ -43,8 +43,20 @@
         <h3>Input</h3>
         <canvas id="inputCanvas" width="320" height="320" aria-label="input grid"></canvas>
       </div>
-
-      <div id="kernelsContainer" class="kernels"></div>
+      <div class="stages">
+        <div class="stage">
+          <h3>Kernels</h3>
+          <div id="colKernels" class="stage-col"></div>
+        </div>
+        <div class="stage">
+          <h3>Convolution</h3>
+          <div id="colConvs" class="stage-col"></div>
+        </div>
+        <div class="stage">
+          <h3>Pooling</h3>
+          <div id="colPools" class="stage-col"></div>
+        </div>
+      </div>
     </section>
   </main>
 
